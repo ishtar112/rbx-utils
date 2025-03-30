@@ -9,7 +9,7 @@ export type Dependency< T = any > = {
 
 --[[
 	Creates & returns a dependency in the form of an API exposing various access methods to some data.
-	A callback must be provided when creating a dependency. Callbacks are passed a function which can be called with a value to initialize the dependency.
+	A callback must be provided when calling this function. Callbacks are passed a function which can be called with a value to initialize the dependency.
 	
 	@param function init
 	@return Dependency
@@ -68,6 +68,8 @@ return function< T >( init: ( ( T ) -> () ) -> () ): Dependency<T>
 			coroutine.resume(thread)
 			awaits[i] = nil
 		end
+		
+		_init = nil :: any -- Allow function to be GC'd if player drops their reference
 	end
 	
 	
