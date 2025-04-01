@@ -49,7 +49,9 @@ return function< T >( init: ( ( T ) -> () ) -> () ): Dependency<T>
 		@param function callback
 	]]
 	local function async( callback: ( T ) -> () )
-		task.spawn(callback, (if not initialized then await() else data) :: T)
+		task.spawn(function()
+			callback((if not initialized then await() else data) :: T)
+		end)
 	end
 	
 	--[[
