@@ -1,7 +1,7 @@
 --!strict
 --!optimize 2
 
-export type dependency< T = unknown > = {
+export type dependency< T > = {
 	initialized: () -> boolean,
 	init: ( T ) -> (),
 	
@@ -15,9 +15,9 @@ export type dependency< T = unknown > = {
 	
 	@return dependency
 ]]
-return function< T >(): dependency<T>
+return function(): dependency<unknown>
 	local is_initialized = false
-	local value: T?
+	local value: unknown?
 	local yielded: { thread } = {}
 	
 	--[[
@@ -26,7 +26,7 @@ return function< T >(): dependency<T>
 		
 		@return unknown?
 	]]
-	local function get(): T?
+	local function get(): unknown?
 		return value
 	end
 	
@@ -36,13 +36,13 @@ return function< T >(): dependency<T>
 		
 		@return unknown: the value the dependency initialized with
 	]]
-	local function await(): T
+	local function await(): unknown
 		if not is_initialized then
 			table.insert(yielded, coroutine.running())
 			coroutine.yield()
 		end
 		
-		return value :: T
+		return value :: unknown
 	end
 	
 	--[[
@@ -51,13 +51,13 @@ return function< T >(): dependency<T>
 		
 		@param function callback
 	]]
-	local function async( callback: ( T ) -> () )
+	local function async( callback: ( unknown ) -> () )
 		if not is_initialized then
 			task.spawn(function()
 				callback(await())
 			end)
 		else
-			callback(value :: T)
+			callback(value :: unknown)
 		end
 	end
 	
@@ -67,7 +67,7 @@ return function< T >(): dependency<T>
 		
 		@param unknown v: the value to initialize the dependency with
 	]]
-	local function init( v: T )
+	local function init( v: unknown )
 		assert(not is_initialized, 'dependency has already initialized')
 		is_initialized = true
 		value = v
