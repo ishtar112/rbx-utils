@@ -6,7 +6,7 @@ export type dependency< T > = {
 	init: ( T ) -> (),
 	
 	get: () -> T?,
-	async: ( callback: ( T ) -> () ) -> (),
+	defer: ( callback: ( T ) -> () ) -> (),
 	await: () -> T,
 }
 
@@ -46,12 +46,12 @@ return function(): dependency<unknown>
 	end
 	
 	--[[
-		Runs a callback asynchronously as soon as the dependency is initialized.
+		Defers a function to be called asynchronously as soon as the dependency is initialized.
 		The value the dependency initializes with is passed to the callback.
 		
 		@param function callback
 	]]
-	local function async( callback: ( unknown ) -> () )
+	local function defer( callback: ( unknown ) -> () )
 		if not is_initialized then
 			task.spawn(function()
 				callback(await())
@@ -73,7 +73,7 @@ return function(): dependency<unknown>
 		value = v
 		
 		
-		for i, thread in yielded do
+		for _, thread in yielded do
 			task.spawn(thread)
 		end
 		
@@ -94,7 +94,7 @@ return function(): dependency<unknown>
 		init = init,
 		
 		get = get,
-		async = async,
+		defer = defer,
 		await = await,
 	}
 end
